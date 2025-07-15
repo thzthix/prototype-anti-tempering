@@ -16,10 +16,14 @@
 
 ## 기술 스택
 
-- Python 3.x
-- SQLite
+- Python 3.11
+- PostgreSQL 17
+- FastAPI 0.115.6
+- SQLModel 0.0.23
 - Beautiful Soup
 - Requests
+- Prometheus
+- Blackbox Exporter
 
 ## 개발 상태
 
