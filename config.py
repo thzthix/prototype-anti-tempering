@@ -1,5 +1,5 @@
 # config.py
-from sqlmodel import create_engine
+from sqlmodel import create_engine, SQLModel
 from typing import Dict
 
 # 현재 PostgreSQL 연결 정보 (딕셔너리 형태)
@@ -22,6 +22,5 @@ DATABASE_URL = (
 # echo=True는 SQL 쿼리를 콘솔에 출력하여 디버깅에 도움을 줍니다.
 engine = create_engine(DATABASE_URL, echo=True)
 
-def get_engine():
-    """데이터베이스 엔진을 반환하는 헬퍼 함수"""
-    return engine
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
