@@ -2,35 +2,41 @@ version: '3.8'
 
 services:
   scraper:
-    build: ./scraper
+    build:
+      context: .
+      dockerfile: ./scraper/Dockerfile
     depends_on:
       - db
 
   exporter:
-    build: ./exporter
+    build:
+      context: .
+      dockerfile: ./exporter/Dockerfile
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - db
 
-  prometheus:
-    image: prom/prometheus:v2.37.0
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus:/etc/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+  #  prometheus:
+#    image: prom/prometheus:v2.37.0
+#    ports:
+#      - "9090:9090"
+#    volumes:
+#      - ./monitoring/prometheus:/etc/prometheus
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
 
-  grafana:
-    image: grafana/grafana:9.1.0
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+#  grafana:
+#    image: grafana/grafana:9.1.0
+#    ports:
+#      - "3000:3000"
+#    volumes:
+#      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
 
   db:
-    image: postgres:14.5
+    image: postgres:17
     environment:
       POSTGRES_USER: proto
       POSTGRES_PASSWORD: type
