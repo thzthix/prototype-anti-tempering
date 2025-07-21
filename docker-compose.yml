@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: ./scraper
+    depends_on:
+      - db
+
+  exporter:
+    build: ./exporter
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana:9.1.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+
+  db:
+    image: postgres:14.5
+    environment:
+      POSTGRES_USER: proto
+      POSTGRES_PASSWORD: type
+      POSTGRES_DB: prototype
+    ports:
+      - "5432:5432"
