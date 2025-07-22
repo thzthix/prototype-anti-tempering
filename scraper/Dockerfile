@@ -12,5 +12,8 @@ COPY models/ ./models
 COPY scraper ./scraper
 RUN pip install ./scraper
 
+COPY scraper/requirements.txt ./requirements.txt
+RUN pip install -r requirements.txt
+
 # 컨테이너 실행 시 실행될 명령어
 CMD ["python", "./scraper/main.py"]
