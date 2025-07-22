@@ -1,8 +1,9 @@
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from sqlmodel import create_engine, SQLModel, Session
 from models.Company import Company
 from models.LoginWebPage import LoginWebPage
-
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable not set.")
@@ -25,4 +26,6 @@ def main():
 
 
 if __name__ == "__main__":
+    print("-----------------------------DATABASE URL: ",DATABASE_URL)
     main()
+    
