@@ -1,11 +1,17 @@
+from http import server
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from models.LoginWebPage import LoginWebPage
-from sqlmodel import create_engine, Session, SQLModel
 from models.Company import Company
-from sqlmodel import select
+from sqlmodel import create_engine, Session, SQLModel
+
 from contextlib import contextmanager
+#from MetricsHandler import MetricsHandler
+from http.server import HTTPServer
+import prometheus_client
+from MetricsCollector import MetricsCollector
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable not set.")
@@ -18,25 +24,24 @@ def get_session():
         yield session
     finally:
         session.close()
-def main():
-    print("Exporter 모듈 시작")
-    with get_session() as session:
-        companies = session.exec(select(Company)).all()
-        for company in companies:
-            print(f"ID: {company.id}, Name: {company.name}, Active: {company.is_active}")
+#def main():
+    # print("Exporter 모듈 시작")
+    # with get_session() as session:
+    #     companies = session.exec(select(Company)).all()
+    #     for company in companies:
+    #         print(f"ID: {company.id}, Name: {company.name}, Active: {company.is_active}")
+    #server = HTTPServer(("0.0.0.0", 8000), MetricsHandler)
+    #erver = 
+    
+   # while True:
 
 import time
 
 if __name__ == "__main__":
-    main()
-    print("컨테이너가 종료되지 않도록 대기 중...")
+    print("Server started on port 8000")
+    collector = MetricsCollector(engine)
+    prometheus_client.REGISTRY.register(collector)
+    prometheus_client.start_http_server(8000)
     while True:
-        with get_session() as session:
-            companies = session.exec(select(Company)).all()
-            for company in companies:
-                print("========================================Exporter 데이터 읽기==========================================\n")
-                print(f"ID: {company.id}, Name: {company.name}, Active: {company.is_active}")
-                web_pages = session.exec(select(LoginWebPage).where(LoginWebPage.company_id == company.id)).all()
-                for web_page in web_pages:
-                    print(f"WebPage: {web_page.id}, URL: {web_page.url}, Company ID: {web_page.company_id}")
         time.sleep(10)
+        print("Metrics collected")

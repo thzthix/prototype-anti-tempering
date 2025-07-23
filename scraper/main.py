@@ -45,7 +45,7 @@ def main():
     create_db_and_tables()
     print("Scraper service started. Performing scraping and saving data...")
     scheduler = BackgroundScheduler()
-    scheduler.add_job(insert_test_data, 'interval', seconds=10)
+    scheduler.add_job(insert_test_data, 'interval', seconds=60)
     scheduler.start()
     try:
         while True:
