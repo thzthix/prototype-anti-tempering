@@ -1,47 +1,29 @@
-from http import server
 import sys
 import os
+import time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from models.LoginWebPage import LoginWebPage
-from models.Company import Company
 from sqlmodel import create_engine, Session, SQLModel
-
-from contextlib import contextmanager
-#from MetricsHandler import MetricsHandler
-from http.server import HTTPServer
 import prometheus_client
 from MetricsCollector import MetricsCollector
+from MetricsHandler import MetricsHandler
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable not set.")
 
-engine = create_engine(DATABASE_URL, echo = True) # SQL 쿼리 출력
-@contextmanager
-def get_session():
-    session = Session(engine)
-    try:
-        yield session
-    finally:
-        session.close()
-#def main():
-    # print("Exporter 모듈 시작")
-    # with get_session() as session:
-    #     companies = session.exec(select(Company)).all()
-    #     for company in companies:
-    #         print(f"ID: {company.id}, Name: {company.name}, Active: {company.is_active}")
-    #server = HTTPServer(("0.0.0.0", 8000), MetricsHandler)
-    #erver = 
-    
-   # while True:
-
-import time
+engine = create_engine(DATABASE_URL, echo=True)
 
 if __name__ == "__main__":
-    print("Server started on port 8000")
+    print("Prometheus Exporter 시작 - 포트 8000")
+    
+    custom_registry = prometheus_client.CollectorRegistry()
+    
     collector = MetricsCollector(engine)
-    prometheus_client.REGISTRY.register(collector)
-    prometheus_client.start_http_server(8000)
+    custom_registry.register(collector)
+    prometheus_client.start_http_server(8000, registry=custom_registry)
+    
+    
+    # 컨테이너가 계속 실행되도록 유지
     while True:
-        time.sleep(10)
-        print("Metrics collected")
+        time.sleep(60)
+        print("Exporter 실행 중...")
